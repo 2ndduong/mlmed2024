@@ -1,0 +1,71 @@
+\documentclass[twocolumn]{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{Measurement of Fetal head circumference using Ultrasound}
+\author{Nguyen Hoang Duong}
+\date{February 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Measurement of fetal head circumference using ultrasound is a crucial aspect of prenatal care, providing vital information about fetal growth and development. Utilizing high-frequency sound waves, ultrasound technology allows for non-invasive and accurate assessment of the fetal head circumference, aiding in the determination of gestational age and identifying potential abnormalities. This measurement serves as a fundamental parameter in monitoring fetal well-being throughout pregnancy, guiding medical interventions when necessary, and ensuring optimal maternal and neonatal outcomes. With advancements in ultrasound technology and techniques, the measurement of fetal head circumference has become a routine and indispensable component of modern obstetric practice, contributing significantly to the comprehensive assessment of fetal health and aiding in informed clinical decision-making.
+
+\section{Background}
+An ultrasound is an imaging test that uses sound waves to make pictures of organs, tissues, and other structures inside your body. It allows your health care provider to see into your body without surgery. Ultrasound is also called ultrasonography or sonography. Ultrasound images may be called sonograms.
+
+Monitor the health and development of an unborn baby during pregnancy. Pregnancy ultrasound can help check if your baby is growing normally. It can screen for certain conditions, such as birth defects that can be seen in images. It can also check for pregnancy problems.
+
+During pregnancy, ultrasound imaging is used to measure fetal biometrics. One of these measurements is the fetal head circumference (HC). The HC can be used to estimate the gestational age and monitor growth of the fetus. The HC is measured in a specific cross section of the fetal head, which is called the standard plane. The dataset for this challenge contains a total of 1334 two-dimensional (2D) ultrasound images of the standard plane that can be used to measure the HC. This challenge makes it possible to compare developed algorithms for automated measurement of fetal head circumference in 2D ultrasound images. 
+
+The data is divided into a training set of 999 images and a test set of 355 images. The size of each 2D ultrasound image is 800 by 540 pixels with a pixel size ranging from 0.052 to 0.326mm. The pixel size for each image can be found in the csv files: training set pixel size and HC csv and test set pixel size csv. The training set also includes an image with the manual annotation of the head circumference for each HC, which was made by a trainer sonographer. The csv file training set pixel size and HC.csv includes the head circumference measurement (in millimeters) for each annotated HC in the training set. All filenames start with a number. There are 999 images in the trainingset, but the filenames only go to 805. Some ultrasound images were made during the same echoscopic examination and have therefore a very similar appearance. These images have an additional number in the filename in between " " and "HC" (for example 010 HC.png and 010 2HC.png) 
+
+\section{Method}
+UNET is a U-shaped encoder-decoder network architecture, which consists of four encoder blocks and four decoder blocks that are connected via a bridge. The encoder network (contracting path) half the spatial dimensions and double the number of filters (feature channels) at each encoder block. Likewise, the decoder network doubles the spatial dimensions and half the number of feature channels.
+
+\section{Network Architecture}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{u-net-architecture.png}
+    \caption{U-Net Architecture}
+    \label{fig:unet}
+\end{figure}
+
+The encoder network acts as the feature extractor and learns an abstract representation of the input image through a sequence of the encoder blocks. Each encoder block consists of two 3x3 convolutions, where each convolution is followed by a ReLU (Rectified Linear Unit) activation function. The ReLU activation function introduces non-linearity into the network, which helps in the better generalization of the training data. The output of the ReLU acts as a skip connection for the corresponding decoder block.
+
+Next, follows a 2x2 max-pooling, where the spatial dimensions (height and width) of the feature maps are reduced by half. This reduces the computational cost by decreasing the number of trainable parameters.
+
+These skip connections provide additional information that helps the decoder to generate better semantic features. They also act as a shortcut connection that helps the indirect flow of gradients to the earlier layers without any degradation. In simple terms, we can say that skip connection helps in better flow of gradient while backpropagation, which in turn helps the network to learn better representation.
+
+The bridge connects the encoder and the decoder network and completes the flow of information. It consists of two 3x3 convolutions, where each convolution is followed by a ReLU activation function.
+
+The decoder network is used to take the abstract representation and generate a semantic segmentation mask. The decoder block starts with a 2x2 transpose convolution. Next, it is concatenated with the corresponding skip connection feature map from the encoder block. These skip connections provide features from earlier layers that are sometimes lost due to the depth of the network. After that, two 3x3 convolutions are used, where each convolution is followed by a ReLU activation function.
+
+The output of the last decoder passes through a 1x1 convolution with sigmoid activation. The sigmoid activation function gives the segmentation mask representing the pixel-wise classification.
+
+\section{Evaluation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Unknown-26.png}
+    \includegraphics[width=0.8\linewidth]{Unknown-27.png}
+    \includegraphics[width=0.8\linewidth]{Unknown-28.png}
+    \includegraphics[width=0.8\linewidth]{Unknown-29.png}
+    \includegraphics[width=0.8\linewidth]{Unknown-30.png}
+    \caption{Outputs of Different Epochs}
+    \label{fig:output}
+\end{figure}
+
+After training the model for 100 iterations, we got the training loss 0.02 , When performing on the validating set, the validating loss close to 0.02
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{Unknown-31.png}
+    \caption{Training and Validating Loss Progression}
+    \label{fig:loss}
+\end{figure}
+
+\section{Conclusion}
+To cover all the report, we built a segmentation model for .
+\end{document}
