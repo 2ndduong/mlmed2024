@@ -1,0 +1,64 @@
+\documentclass[twocolumn]{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{Segmentation of COVID19 X-ray images}
+\author{Nguyen Hoang Duong}
+\date{February 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Segmentation of COVID-19 in X-ray images has emerged as a critical endeavor in the battle against the global pandemic, leveraging advanced image processing techniques to aid in accurate diagnosis and treatment planning. With the rapid spread of the novel coronavirus, medical imaging, particularly X-ray imaging, has played a pivotal role in identifying pulmonary abnormalities associated with COVID-19 infection. Segmentation, the process of delineating and isolating regions of interest within medical images, enables precise localization and quantification of COVID-19-related lung lesions, facilitating efficient triage, monitoring disease progression, and guiding therapeutic interventions. Leveraging sophisticated algorithms and machine learning approaches, researchers and clinicians strive to develop robust segmentation methods capable of accurately delineating COVID-19-related opacities while mitigating the challenges posed by imaging artifacts and variability in disease presentation. As the demand for efficient and reliable diagnostic tools intensifies, the segmentation of COVID-19 in X-ray images stands at the forefront of innovation, offering promise for enhancing patient care and combating the unprecedented challenges posed by the ongoing pandemic.
+
+\section{Background}
+X-ray (or much less commonly, X-radiation) is a high-energy electromagnetic radiation. In many languages, it is referred to as Röntgen radiation, after the German scientist Wilhelm Conrad Röntgen, who discovered it in 1895 and named it X-radiation to signify an unknown type of radiation.
+
+X-ray wavelengths are shorter than those of ultraviolet rays and longer than those of gamma rays. There is no universally accepted, strict definition of the bounds of the X-ray band. Roughly, X-rays have a wavelength ranging from 10 nanometers to 10 picometers, corresponding to frequencies in the range of 30 petahertz to 30 exahertz (3×1016 Hz to 3×1019 Hz) and photon energies in the range of 100 eV to 100 keV, respectively.
+
+X-rays can penetrate many solid substances such as construction materials and living tissue, so X-ray radiography is widely used in medical diagnostics (e.g., checking for broken bones) and material science (e.g., identification of some chemical elements and detecting weak points in construction materials). However X-rays are ionizing radiation, and exposure to high intensities can be hazardous to health, causing DNA damage, cancer, and at high dosages burns and radiation sickness. Their generation and use is strictly controlled by public health authorities.
+
+Coronavirus disease (COVID-19) is an infectious disease caused by the SARS-CoV-2 virus.
+
+COVID-19 can cause lung complications such as pneumonia and, in the most severe cases, acute respiratory distress syndrome, or ARDS. Sepsis, another possible complication of COVID-19, can also cause lasting harm to the lungs and other organs. Newer coronavirus variants may also cause more airway disease, such as bronchitis, that may be severe enough to warrant hospitalization.
+
+In pneumonia, the lungs become filled with fluid and inflamed, leading to breathing difficulties. For some people, breathing problems can become severe enough to require treatment at the hospital with oxygen or even a ventilator.
+
+The pneumonia that COVID-19 causes tends to take hold in both lungs. Air sacs in the lungs fill with fluid, limiting their ability to take in oxygen and causing shortness of breath, cough and other symptoms.
+
+While most people recover from pneumonia without any lasting lung damage, the pneumonia associated with COVID-19 can be severe. Even after the disease has passed, lung injury may result in breathing difficulties that might take months to improve.
+
+If COVID-19 pneumonia progresses, more of the air sacs can become filled with fluid leaking from the tiny blood vessels in the lungs. Eventually, shortness of breath sets in, and can lead to acute respiratory distress syndrome (ARDS), a form of lung failure. Patients with ARDS are often unable to breath on their own and may require ventilator support to help circulate oxygen in the body.
+
+Whether it occurs at home or at the hospital, ARDS can be fatal. People who survive ARDS and recover from COVID-19 may have lasting pulmonary scarring.
+
+The researchers of Qatar University have compiled the COVID-QU-Ex dataset, which consists of 33,920 chest X-ray (CXR) images including:
+11,956 COVID-19
+11,263 Non-COVID infections (Viral or Bacterial Pneumonia)
+10,701 Normal
+Ground-truth lung segmentation masks are provided for the entire dataset.
+
+\section{Method}
+UNET is a U-shaped encoder-decoder network architecture, which consists of four encoder blocks and four decoder blocks that are connected via a bridge. The encoder network (contracting path) half the spatial dimensions and double the number of filters (feature channels) at each encoder block. Likewise, the decoder network doubles the spatial dimensions and half the number of feature channels. 
+
+The encoder network acts as the feature extractor and learns an abstract representation of the input image through a sequence of the encoder blocks. Each encoder block consists of two 3x3 convolutions, where each convolution is followed by a ReLU (Rectified Linear Unit) activation function. The ReLU activation function introduces non-linearity into the network, which helps in the better generalization of the training data. The output of the ReLU acts as a skip connection for the corresponding decoder block.
+
+Next, follows a 2x2 max-pooling, where the spatial dimensions (height and width) of the feature maps are reduced by half. This reduces the computational cost by decreasing the number of trainable parameters.
+
+These skip connections provide additional information that helps the decoder to generate better semantic features. They also act as a shortcut connection that helps the indirect flow of gradients to the earlier layers without any degradation. In simple terms, we can say that skip connection helps in better flow of gradient while backpropagation, which in turn helps the network to learn better representation.
+
+The bridge connects the encoder and the decoder network and completes the flow of information. It consists of two 3x3 convolutions, where each convolution is followed by a ReLU activation function.
+
+The decoder network is used to take the abstract representation and generate a semantic segmentation mask. The decoder block starts with a 2x2 transpose convolution. Next, it is concatenated with the corresponding skip connection feature map from the encoder block. These skip connections provide features from earlier layers that are sometimes lost due to the depth of the network. After that, two 3x3 convolutions are used, where each convolution is followed by a ReLU activation function.
+
+The output of the last decoder passes through a 1x1 convolution with sigmoid activation. The sigmoid activation function gives the segmentation mask representing the pixel-wise classification.
+
+\section{Evaluation}
+Metric
+Result
+
+Discussion
+\section{Conclusion}
+
+\end{document}
